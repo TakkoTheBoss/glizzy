@@ -1,6 +1,6 @@
 # GLIZZY — BLE GATT Handle Fuzzer
 
-![GLIZZY Icon PNG](glizzy.png "Glizzy Gobbler")
+![GLIZZY Icon PNG](glizzy.jpg "Glizzy Gobbler")
 
 GLIZZY is a terminal-based tool for fuzzing Bluetooth Low Energy (BLE) GATT characteristic handles.  
 It can probe writeable lengths, perform repeated runs, inject random or static hex payloads, and immediately read back values. Output is color-coded and concise.
