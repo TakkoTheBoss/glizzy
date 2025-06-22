@@ -96,6 +96,8 @@ sudo python3 ble_fuzzer.py 9C:F1:D4:40:08:13   -s 0x000d-0x000d   -c 8   -n 5
 
 ![ GLIZZY Run ](glizzyrun.png "GLIZZY Run")
 
+![ GLIZZY Run 2 ](glizzyrun2.png "GLIZZY Run 2")
+
 ## Examples
 
 1. **Fuzz a single handle**  
