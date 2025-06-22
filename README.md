@@ -94,12 +94,7 @@ sudo python3 ble_fuzzer.py 9C:F1:D4:40:08:13   -s 0x000d-0x000d   -c 8   -n 5
 
 ---
 
-## Output Files
-
-- **`blefuzz_results.json`**: Raw array of all write attempts, including handle, length, exit code, and read-back (if any).  
-- Can be imported into your favorite analysis/visualization tool.
-
----
+![ GLIZZY Run ](glizzyrun.png "GLIZZY Run")
 
 ## Examples
 
