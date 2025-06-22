@@ -42,7 +42,7 @@ sudo python3 glizzy.py <MAC> [options]
 
 | Name  | Description                             |
 |-------|-----------------------------------------|
-| `MAC` | BLE device MAC address (e.g. `9C:F1:D4:40:08:13`) |
+| `MAC` | BLE device MAC address (e.g. `AA:BB:CC:DD:EE:FF`) |
 
 ### Options
 
@@ -65,7 +65,7 @@ sudo python3 glizzy.py <MAC> [options]
 Probes each handle from length 1 up to `--chars`.
 
 ```bash
-sudo python3 glizzy.py 9C:F1:D4:40:08:13   -s 0x000d-0x000d   -c 5
+sudo python3 glizzy.py AA:BB:CC:DD:EE:FF   -s 0x000d-0x000d   -c 5
 ```
 
 **Output:**
@@ -88,7 +88,7 @@ Service handles d-d (UUID: manual)
 Repeat exactly `--chars`-length writes for `--runs` iterations:
 
 ```bash
-sudo python3 glizzy.py 9C:F1:D4:40:08:13   -s 0x000d-0x000d   -c 8   -n 5
+sudo python3 glizzy.py  AA:BB:CC:DD:EE:FF -s 0x000d-0x000d   -c 8   -n 5
 ```
 
 - Sends five writes, each with an 8-hex-nibble payload.
@@ -110,17 +110,17 @@ sudo python3 glizzy.py 9C:F1:D4:40:08:13   -s 0x000d-0x000d   -c 8   -n 5
 
 1. **Fuzz a single handle**  
    ```bash
-   sudo python3 glizzy.py 9C:F1:D4:40:08:13      -H 0x000d      -c 10      -r
+   sudo python3 glizzy.py AA:BB:CC:DD:EE:FF -H 0x000d -c 10 -r
    ```
 
 2. **Filter by service UUID**  
    ```bash
-   sudo python3 glizzy.py 9C:F1:D4:40:08:13      -u 00005001      -c 6
+   sudo python3 glizzy.py AA:BB:CC:DD:EE:FF -u 00005001... -c 6
    ```
 
 3. **Full default discovery + incremental fuzz**  
    ```bash
-   sudo python3 glizzy.py 9C:F1:D4:40:08:13
+   sudo python3 glizzy.py AA:BB:CC:DD:EE:FF
    ```
 
 
