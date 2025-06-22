@@ -21,11 +21,11 @@ Once these are identified, then the `-r` random mode with `-n` number of fuzz ru
 
 ## Installation
 
-1. Ensure you have **Python 3** and `gatttool` installed (from the BlueZ package).
-2. Clone or download **`ble_fuzzer.py`** into your working directory.
+1. Ensure you have **Python3** and `gatttool` installed (from the BlueZ package).
+2. Clone or download **`glizzy.py`** into your working directory.
 3. Make sure it’s executable:
    ```bash
-   chmod +x ble_fuzzer.py
+   chmod +x glizzy.py
    ```
 
 ---
@@ -33,7 +33,7 @@ Once these are identified, then the `-r` random mode with `-n` number of fuzz ru
 ## Usage
 
 ```bash
-sudo python3 ble_fuzzer.py <MAC> [options]
+sudo python3 glizzy.py <MAC> [options]
 ```
 
 - You **must** run as root (or with `sudo`) to use `gatttool`.
@@ -65,7 +65,7 @@ sudo python3 ble_fuzzer.py <MAC> [options]
 Probes each handle from length 1 up to `--chars`.
 
 ```bash
-sudo python3 ble_fuzzer.py 9C:F1:D4:40:08:13   -s 0x000d-0x000d   -c 5
+sudo python3 glizzy.py 9C:F1:D4:40:08:13   -s 0x000d-0x000d   -c 5
 ```
 
 **Output:**
@@ -88,7 +88,7 @@ Service handles d-d (UUID: manual)
 Repeat exactly `--chars`-length writes for `--runs` iterations:
 
 ```bash
-sudo python3 ble_fuzzer.py 9C:F1:D4:40:08:13   -s 0x000d-0x000d   -c 8   -n 5
+sudo python3 glizzy.py 9C:F1:D4:40:08:13   -s 0x000d-0x000d   -c 8   -n 5
 ```
 
 - Sends five writes, each with an 8-hex-nibble payload.
@@ -110,17 +110,17 @@ sudo python3 ble_fuzzer.py 9C:F1:D4:40:08:13   -s 0x000d-0x000d   -c 8   -n 5
 
 1. **Fuzz a single handle**  
    ```bash
-   sudo python3 ble_fuzzer.py 9C:F1:D4:40:08:13      -H 0x000d      -c 10      -r
+   sudo python3 glizzy.py 9C:F1:D4:40:08:13      -H 0x000d      -c 10      -r
    ```
 
 2. **Filter by service UUID**  
    ```bash
-   sudo python3 ble_fuzzer.py 9C:F1:D4:40:08:13      -u 00005001      -c 6
+   sudo python3 glizzy.py 9C:F1:D4:40:08:13      -u 00005001      -c 6
    ```
 
 3. **Full default discovery + incremental fuzz**  
    ```bash
-   sudo python3 ble_fuzzer.py 9C:F1:D4:40:08:13
+   sudo python3 glizzy.py 9C:F1:D4:40:08:13
    ```
 
 
