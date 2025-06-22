@@ -7,6 +7,18 @@ It can probe writeable lengths, perform repeated runs, inject random or static h
 
 ---
 
+## Intended Use
+
+It's recommended to use GLIZZY after the running services on the target bluetooth low energy (BTLE/BLE) target device are discovered. Running in incremental mode and omitting the `-r` random flag allows the user to discover how many characters the handle (or service) will allow.
+
+![ GLIZZY Run ](glizzyrun.png "GLIZZY Run")
+
+![ GLIZZY Run 2 ](glizzyrun2.png "GLIZZY Run 2")
+
+Once these are identified, then the `-r` random mode with `-n` number of fuzz runs can be enabled, to drill down on those service with the accepted input size.
+
+---
+
 ## Installation
 
 1. Ensure you have **Python 3** and `gatttool` installed (from the BlueZ package).
@@ -93,10 +105,6 @@ sudo python3 ble_fuzzer.py 9C:F1:D4:40:08:13   -s 0x000d-0x000d   -c 8   -n 5
 - **Summary** (magenta) – Result summary  
 
 ---
-
-![ GLIZZY Run ](glizzyrun.png "GLIZZY Run")
-
-![ GLIZZY Run 2 ](glizzyrun2.png "GLIZZY Run 2")
 
 ## Examples
 
