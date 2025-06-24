@@ -26,6 +26,7 @@ class BLEFuzzer:
         self.target_uuid     = args.uuid.lower() if args.uuid else None
         self.random_mode     = args.random
         self.runs            = args.runs
+        self.prefix          = args.prefix.lower() if args.prefix else ''
         self.results         = []
 
     @staticmethod
@@ -85,23 +86,27 @@ class BLEFuzzer:
                     hstr = f'0x{handle:04x}'
                     for _ in range(self.runs):
                         length = self.chars_to_write
-                        payload = (
-                            ''.join(random.choice('0123456789abcdef')
-                                    for _ in range(length))
+                        prefix = self.prefix
+                        suffix_len = max(0, length - len(prefix))
+                        suffix = (
+                            ''.join(random.choice('0123456789abcdef') for _ in range(suffix_len))
                             if self.random_mode else
-                            '0'*length
+                            '0' * suffix_len
                         )
+                        payload = prefix + suffix
                         self._attempt(hstr, length, payload)
             else:
                 for handle in range(a, b+1):
                     hstr = f'0x{handle:04x}'
                     for length in range(1, self.chars_to_write+1):
-                        payload = (
-                            ''.join(random.choice('0123456789abcdef')
-                                    for _ in range(length))
+                        prefix = self.prefix
+                        suffix_len = max(0, length - len(prefix))
+                        suffix = (
+                            ''.join(random.choice('0123456789abcdef') for _ in range(suffix_len))
                             if self.random_mode else
-                            '0'*length
+                            '0' * suffix_len
                         )
+                        payload = prefix + suffix
                         self._attempt(hstr, length, payload)
             print()
 
@@ -205,6 +210,10 @@ if __name__ == '__main__':
     parser.add_argument(
         '-r','--random', action='store_true',
         help='Use random hex fuzz'
+    )
+    parser.add_argument(
+        '-p','--prefix',
+        help='Hex prefix to prepend to fuzz input (e.g. 9d)'
     )
     args = parser.parse_args()
     if args.services:

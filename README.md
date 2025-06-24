@@ -94,6 +94,14 @@ sudo python3 glizzy.py  AA:BB:CC:DD:EE:FF -s 0x000d-0x000d   -c 8   -n 5
 - Sends five writes, each with an 8-hex-nibble payload.
 - Use `-r` to randomize each payload.
 
+You can also prepend a fixed hex pattern using --prefix:
+
+```shell
+sudo python3 glizzy.py AA:BB:CC:DD:EE:FF -H 0x000f -c 5 -n 10 -r -p 9d
+```
+
+Sends random 3-character hex strings prefixed with 9d, making each payload 0x9d??.
+
 ---
 
 ## Color Legend
