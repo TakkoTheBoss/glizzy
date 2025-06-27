@@ -1,41 +1,32 @@
-
 # GLIZZY — BLE GATT Handle Fuzzer
 
-GLIZZY is a terminal-based Python tool for fuzzing Bluetooth Low Energy (BLE) GATT characteristic handles.
+![GLIZZY Icon PNG](glizzy.jpg "Glizzy Gobbler")
 
-It can:
-- Discover primary services and characteristics
-- Fuzz writeable handles with random or static hex payloads
-- Log results and read back values
-- Run in read-only mode or via an interactive TUI (if `curses` is installed)
-
-Color-coded output makes it easy to interpret results at a glance.
+GLIZZY is a terminal-based tool for fuzzing Bluetooth Low Energy (BLE) GATT characteristic handles.  
+It can probe writeable lengths, perform repeated runs, inject random or static hex payloads, and immediately read back values. Output is color-coded and concise.
 
 ---
 
 ## Intended Use
 
-Use GLIZZY after identifying the target BLE device. It is ideal for:
-- Validating max accepted payload lengths
-- Discovering valid GATT handles
-- Triggering device-specific behaviors based on writes
-- Observing potential crash or error conditions from malformed input
+It's recommended to use GLIZZY after the running services on the target bluetooth low energy (BTLE/BLE) target device are discovered. Running in incremental mode and omitting the `-r` random flag allows the user to discover how many characters the handle (or service) will allow.
 
-Start with incremental mode (no `-r`) to probe lengths safely. Then use random mode (`-r`) and set a number of runs (`-n`) for active fuzzing.
+![ GLIZZY Run ](glizzyrun.png "GLIZZY Run")
+
+![ GLIZZY Run 2 ](glizzyrun2.png "GLIZZY Run 2")
+
+Once these are identified, then the `-r` random mode with `-n` number of fuzz runs can be enabled, to drill down on those service with the accepted input size.
 
 ---
 
 ## Installation
 
-1. Python 3
-2. `gatttool` from BlueZ suite
-3. (Optional) `curses` for TUI
-
-Clone or download glizzy.py and make it executable:
-
-```bash
-chmod +x glizzy.py
-```
+1. Ensure you have **Python3** and `gatttool` installed (from the BlueZ package).
+2. Clone or download **`glizzy.py`** into your working directory.
+3. Make sure it’s executable:
+   ```bash
+   chmod +x glizzy.py
+   ```
 
 ---
 
@@ -45,17 +36,13 @@ chmod +x glizzy.py
 sudo python3 glizzy.py <MAC> [options]
 ```
 
-Root is required for BLE access via `gatttool`.
+- You **must** run as root (or with `sudo`) to use `gatttool`.
 
----
+### Positional Arguments
 
-## Arguments
-
-### Positional
-
-| Argument | Description                            |
-|----------|----------------------------------------|
-| `MAC`    | BLE device MAC address (`AA:BB:CC:DD:EE:FF`) |
+| Name  | Description                             |
+|-------|-----------------------------------------|
+| `MAC` | BLE device MAC address (e.g. `AA:BB:CC:DD:EE:FF`) |
 
 ### Options
 
@@ -80,87 +67,74 @@ Root is required for BLE access via `gatttool`.
 
 ## Modes of Operation
 
-### Incremental Fuzzing (Default)
-
-Tests increasing payload lengths (1 to `--chars`).
-
-```bash
-sudo python3 glizzy.py AA:BB:CC:DD:EE:FF -s 0x000d-0x000d -c 5
-```
-
-### Static-Length Mode
-
-Repeats fixed-length writes (`--chars`) for N runs.
+### 1. Incremental Mode (Default)
+Probes each handle from length 1 up to `--chars`.
 
 ```bash
-sudo python3 glizzy.py AA:BB:CC:DD:EE:FF -H 0x000f -c 8 -n 10 -r
+sudo python3 glizzy.py AA:BB:CC:DD:EE:FF   -s 0x000d-0x000d   -c 5
 ```
 
-### Read-Only Mode
+**Output:**
+```
+==> DISCOVER SERVICES
+==> FUZZING HANDLES
+Service handles d-d (UUID: manual)
 
-Only read characteristics from discovered services.
+✖ 0x000d len=1   input=0x0 -> Invalid value
+? 0x000d len=2   input=0x00 -> Characteristic Write Request failed: Attribute value length is invalid
+? 0x000d len=3   input=0x000 -> Characteristic Write Request failed: Attribute value length is invalid
+✔ 0x000d len=4   input=0x0000 -> OK readback=Characteristic value/descriptor: 00 00
+✔ 0x000d len=5   input=0x00000 -> OK readback=Characteristic value/descriptor: 00 00
+
+==> SUMMARY
+0x000d: max 5 bytes, fail at None
+```
+
+### 2. Static-Length Mode
+Repeat exactly `--chars`-length writes for `--runs` iterations:
 
 ```bash
-sudo python3 glizzy.py AA:BB:CC:DD:EE:FF --read-only
+sudo python3 glizzy.py  AA:BB:CC:DD:EE:FF -s 0x000d-0x000d   -c 8   -n 5
 ```
 
-### TUI Mode
+- Sends five writes, each with an 8-hex-nibble payload.
+- Use `-r` to randomize each payload.
 
-Provides a live terminal dashboard with handle info, progress, and elapsed time.
+You can also prepend a fixed hex pattern using --prefix:
 
-```bash
-sudo python3 glizzy.py AA:BB:CC:DD:EE:FF --tui
+```shell
+sudo python3 glizzy.py AA:BB:CC:DD:EE:FF -H 0x000f -c 5 -n 10 -r -p 9d
 ```
 
-Requires `curses` module to be installed.
+Sends random 3-character hex strings prefixed with 9d, making each payload 0x9d??.
 
 ---
 
 ## Color Legend
 
-| Symbol | Meaning                                                      |
-|--------|--------------------------------------------------------------|
-| ✔      | Write succeeded and readback was successful (Green)         |
-| ✖      | Write failed (Red)                                          |
-| ?      | Likely valid handle, but input length not accepted (Yellow) |
-|        | Notification was observed after write                        |
+- **✔** (green) – Write succeeded & read-back shown  
+- **✖** (red) – Hard failure (non-zero exit, unexpected error)  
+- **?** (yellow) – Soft failure (“Attribute value length is invalid”)  
+- **Service handles…** (cyan) – Section headers  
+- **Summary** (magenta) – Result summary  
 
 ---
 
 ## Examples
 
-1. Fuzz specific handle with incremental lengths
+1. **Fuzz a single handle**  
+   ```bash
+   sudo python3 glizzy.py AA:BB:CC:DD:EE:FF -H 0x000d -c 10 -r
+   ```
 
-```bash
-sudo python3 glizzy.py AA:BB:CC:DD:EE:FF -H 0x000d -c 10
-```
+2. **Filter by service UUID**  
+   ```bash
+   sudo python3 glizzy.py AA:BB:CC:DD:EE:FF -u 00005001... -c 6
+   ```
 
-2. Write fixed-length random hex strings with a prefix
+3. **Full default discovery + incremental fuzz**  
+   ```bash
+   sudo python3 glizzy.py AA:BB:CC:DD:EE:FF
+   ```
 
-```bash
-sudo python3 glizzy.py AA:BB:CC:DD:EE:FF -H 0x000f -c 6 -n 5 -r -p 9d
-```
-
-Payloads like: `9dXX`, where `XX` is random
-
-3. Filter services by UUID prefix before fuzzing
-
-```bash
-sudo python3 glizzy.py AA:BB:CC:DD:EE:FF -u 00005001 -c 6
-```
-
----
-
-## Output
-
-Results are:
-- Displayed live on the terminal
-- Optionally logged to a file (via `--log`)
-- Saved as JSON in `glizzy_results.json` upon completion or interruption
-
----
-
-## Interrupting
-
-Press `Ctrl+C` to interrupt the scan gracefully. Results will still be saved.
 
